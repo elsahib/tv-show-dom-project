@@ -10,12 +10,12 @@ function makePageForEpisodes(episodeList) {
   for (let i = 0; i < episodeList.length; i++) {
     let episodeContainer = document.createElement("div"),
         episodeName = document.createElement("h2"),
-        episodeImg = document.createElement("img");
+        episodeImg = document.createElement("img"),
+        episodeCode = "S" + episodeList[i].season.toString().padStart(2,"0") + "E" + episodeList[i].number.toString().padStart(2,"0");
     rootElem.classList.add("container");
     episodeContainer.classList.add("episode");
     episodeName.classList.add("name")
-    episodeName.innerText = episodeList[i].name + " - " + "S" + episodeList[i].season.toString().padStart(2,"0") + "E"+
-    episodeList[i].number.toString().padStart(2,"0");
+    episodeName.innerText = `${episodeList[i].name} - ${episodeCode} ` ;
     episodeImg.src = episodeList[i].image.medium;
     episodeContainer.append(episodeName,episodeImg);
     episodeContainer.innerHTML += episodeList[i].summary;
