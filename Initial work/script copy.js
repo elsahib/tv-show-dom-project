@@ -35,32 +35,19 @@ function makePageForEpisodes(episodeList) {
   rootElem.innerHTML = ""; // Clearing the main container
   for (let i = 0; i < episodeList.length; i++) {
     // declaring variables for each episode.
-    let episodeContainer = document.createElement("div"), 
-        episodeShadow = document.createElement("div"),
-        episodeBody = document.createElement("div"),
-        episodeTitle = document.createElement("div"),
-        episodeN = document.createElement("div"),
-        episodeNameCode = document.createElement("mediuem"),
+    let episodeContainer = document.createElement("div"),
+        episodeName = document.createElement("h2"),
         episodeImg = document.createElement("img"),
         episodeCode = "S" + episodeList[i].season.toString().padStart(2,"0") + "E" + episodeList[i].number.toString().padStart(2,"0");
     // adding classes to style the page.
-    episodeContainer.classList.add("col-md-4");
-    episodeShadow.classList.add("card", "mb-4", "shadow-sm");
-    episodeImg.classList.add("bd-placeholder-img", "card-img-top");
-    episodeBody.classList.add("card-body");
-    episodeTitle.classList.add("d-flex", "justify-content-between", "align-items-center");
-    episodeN.classList.add("btn-group", "name");
-    episodeNameCode.classList.add("text-muted");
-    
-    episodeTitle.id = "title";
-    episodeTitle.append(episodeN,episodeNameCode);
-    episodeNameCode.innerText = episodeCode;
-    episodeN.innerText = episodeList[i].name ;
-    episodeBody.innerHTML = episodeList[i].summary;
+    rootElem.classList.add("container");
+    episodeContainer.classList.add("episode");
+    episodeName.classList.add("name")
+    // preparing the episode component
+    episodeName.innerText = `${episodeList[i].name} - ${episodeCode} ` ;
     episodeImg.src = episodeList[i].image.medium;
-    episodeShadow.append(episodeTitle,episodeImg,episodeBody);
-    episodeContainer.append(episodeShadow);
-  
+    episodeContainer.append(episodeName,episodeImg);
+    episodeContainer.innerHTML += episodeList[i].summary;
     // after the episode is ready it gets added to the main container.
     rootElem.append(episodeContainer);
   }  
