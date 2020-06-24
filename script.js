@@ -13,7 +13,7 @@ function setup() {
   // string includes method inside a custom made function named search
   searchBox.addEventListener("input", () =>{
     let resultNumber = document.getElementById("resultNumber");
-    let results = allEpisodes.filter(search);
+    let results = allEpisodes.filter(containsSearchTerm);
     makePageForEpisodes(results);
     resultNumber.innerText = `${results.length} / ${allEpisodes.length}`
     if(searchBox.value.length == 0 ) {
@@ -25,7 +25,7 @@ function setup() {
     if(selectEpisode.value === "novalue"){
       makePageForEpisodes(allEpisodes);
     } else {
-     let result =  allEpisodes.filter((episode)=>{ return episode.id == selectEpisode.value});
+     let result =  allEpisodes.find((episode)=>{ return episode.id == selectEpisode.value});
      makePageForEpisodes(result);
     }
   })
@@ -65,6 +65,7 @@ function makePageForEpisodes(episodeList) {
     rootElem.append(episodeContainer);
   }  
 }
+
 // function to return episode code and name
 function listEpisodes(episodes) {
   for(let i = 0; i<episodes.length; i++){
@@ -76,7 +77,7 @@ function listEpisodes(episodes) {
   }
 }
 // this will return true or false based on user input.
-function search(episode){
+function containsSearchTerm(episode){
   return (episode.summary.toLowerCase().includes(searchBox.value.toLowerCase()) || episode.name.toLowerCase().includes(searchBox.value.toLowerCase()))
 }
 window.onload = setup;
