@@ -1,10 +1,15 @@
-.navbar-toggler {
-  background-color: white;
-  color: black;
-  width: 435px;
+#search {
+  width: 22rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  transition: box-shadow 0.15s ease-in-out;
 }
-.navbar-dark {
-  color: black;
+.select {
+  width: 22rem;
+  font-size: 1rem;
 }
 .name {
   padding: 15px 0px 15px 0px;
