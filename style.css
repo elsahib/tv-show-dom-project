@@ -41,3 +41,6 @@ color: white;
 .col-md-4 {
   padding-bottom: 15px;
 }
+.name {
+  text-align: left;
+}
