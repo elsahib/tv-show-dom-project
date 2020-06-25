@@ -51,6 +51,7 @@ function makePageForEpisodes(episodeList) {
     episodeTitle.classList.add("d-flex", "justify-content-between", "align-items-center");
     episodeN.classList.add("btn-group", "name");
     episodeNameCode.classList.add("text-muted");
+    episodeNameCode.id = "episodeNameCode";
     
     episodeTitle.id = "title";
     episodeTitle.append(episodeN,episodeNameCode);
