@@ -17,13 +17,21 @@
     <header>
       <div class="navbar bg-dark">
         <div class="container d-flex">
-          <div class="navbar-brand d-flex">
-            <select class="select" name="episodesList" id="allEpisodes">
-              <option value="novalue">Show all episodes</option>
-            </select>
+          <select class="select" name="showsList" id="allShows">
+            <option value="novalue">The show WE like!</option>
+          </select>
+
+          <select class="select" name="episodesList" id="allEpisodes">
+            <option value="novalue">List all episodes</option>
+          </select>
+          <div>
+            <input
+              placeholder="Start typing to filter"
+              type="text"
+              id="search"
+            />
+            <span id="resultNumber"></span>
           </div>
-          <span id="resultNumber"></span>
-          <input placeholder="Start typing to filter" type="text" id="search" />
         </div>
       </div>
     </header>

@@ -1,19 +1,35 @@
 // Global variables
 const rootElem = document.getElementById("root");
 let searchBox = document.getElementById("search");
-// const allEpisodes = getAllEpisodes();
+const allShows = getAllShows().sort(function (a, b) {
+  if (a.name < b.name) {
+    return -1;
+  }
+  if (a.name > b.name) {
+    return 1;
+  }
+  return 0;
+});
 let liveEpisodes;
 const selectEpisode = document.getElementById("allEpisodes");
-
+const selectShow = document.getElementById("allShows");
 // first function gets executed as soon as the page is fully loaded.
 function setup() {
+  listShows(allShows);
   getData("https://api.tvmaze.com/shows/82/episodes");
 
   searchBox.addEventListener("input", () => {
     let resultNumber = document.getElementById("resultNumber");
     let results = liveEpisodes.filter(containsSearchTerm);
     makePageForEpisodes(results);
-    resultNumber.innerText = `${results.length} / ${liveEpisodes.length}`;
+    resultNumber.innerText = `${results.length} out of  ${liveEpisodes.length} Episodes`;
+    if (results.length > 0) {
+      resultNumber.className = "";
+      resultNumber.classList.add("badge", "badge-success");
+    } else {
+      resultNumber.className = "";
+      resultNumber.classList.add("badge", "badge-danger");
+    }
     if (searchBox.value.length == 0) {
       resultNumber.innerText = "";
     }
@@ -28,6 +44,13 @@ function setup() {
       makePageForEpisodes(result);
     }
   });
+  selectShow.addEventListener("change", () => {
+    let show = `https://api.tvmaze.com/shows/${selectShow.value}/episodes`;
+    if (selectShow.value === "novalue") {
+      getData("https://api.tvmaze.com/shows/82/episodes");
+    }
+    getData(show);
+  });
 }
 
 function getData(source) {
@@ -38,7 +61,6 @@ function getData(source) {
     .then((data) => {
       liveEpisodes = data;
     })
-    .then(() => console.log(liveEpisodes))
     .then(() => makePageForEpisodes(liveEpisodes))
     .then(() => listEpisodes(liveEpisodes))
     .catch((error) => console.log(error));
@@ -145,6 +167,10 @@ function makeBody(episode) {
 }
 
 function listEpisodes(episodes) {
+  while (selectEpisode.childNodes.length > 2) {
+    // I don't know why it only works when it's > 2. it should work when it's > 1.
+    selectEpisode.removeChild(selectEpisode.lastChild);
+  }
   episodes.forEach((episode) => {
     let dropDownOption = document.createElement("option");
     dropDownOption.value = episode.id;
@@ -152,7 +178,14 @@ function listEpisodes(episodes) {
     selectEpisode.appendChild(dropDownOption);
   });
 }
-
+function listShows(shows) {
+  shows.forEach((show) => {
+    let option = document.createElement("option");
+    option.value = show.id;
+    option.innerText = `${show.name}`;
+    selectShow.append(option);
+  });
+}
 function containsSearchTerm(episode) {
   return (
     episode.summary.toLowerCase().includes(searchBox.value.toLowerCase()) ||
