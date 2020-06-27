@@ -167,7 +167,7 @@ function makeBody(episode) {
 }
 
 function listEpisodes(episodes) {
-  while (selectEpisode.childNodes.length > 2) {
+  while (selectEpisode.lastChild.value !== "novalue") {
     // I don't know why it only works when it's > 2. it should work when it's > 1.
     selectEpisode.removeChild(selectEpisode.lastChild);
   }
