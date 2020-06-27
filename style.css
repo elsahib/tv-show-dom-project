@@ -56,3 +56,47 @@
 .episodefooter {
   padding: 1.25rem 1.25rem 0.75rem 1.25rem;
 }
+
+@media (min-width: 576px) {
+  .name {
+    text-align: left;
+    margin-bottom: 2px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (min-width: 768px) {
+  .name {
+    text-align: left;
+    margin-bottom: 2px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (min-width: 992px) {
+  .name {
+    text-align: left;
+    margin-bottom: 2px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (min-width: 1200px) {
+  .name {
+    text-align: left;
+    margin-bottom: 2px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+  }
+}
