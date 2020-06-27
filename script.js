@@ -119,7 +119,7 @@ function makeEpisodeFooter(episode) {
 function makeTime(episode) {
   let episodeTime = document.createElement("small");
   episodeTime.classList.add("text-muted");
-  episodeTime.innerText = `${episode.runtime} minutes`;
+  episodeTime.innerText = `Duration: ${episode.runtime} min`;
   return episodeTime;
 }
 function makeLink(episode) {

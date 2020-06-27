@@ -56,7 +56,18 @@
 .episodefooter {
   padding: 1.25rem 1.25rem 0.75rem 1.25rem;
 }
-
+a {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+}
+small {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+}
 @media (min-width: 576px) {
   .name {
     text-align: left;
