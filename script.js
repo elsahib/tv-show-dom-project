@@ -1,34 +1,47 @@
 // Global variables
 const rootElem = document.getElementById("root");
 let searchBox = document.getElementById("search");
-const allEpisodes = getAllEpisodes();
+// const allEpisodes = getAllEpisodes();
+let liveEpisodes;
 const selectEpisode = document.getElementById("allEpisodes");
+
 // first function gets executed as soon as the page is fully loaded.
 function setup() {
-  makePageForEpisodes(allEpisodes);
-
-  listEpisodes(allEpisodes);
+  getData("https://api.tvmaze.com/shows/82/episodes");
 
   searchBox.addEventListener("input", () => {
     let resultNumber = document.getElementById("resultNumber");
-    let results = allEpisodes.filter(containsSearchTerm);
+    let results = liveEpisodes.filter(containsSearchTerm);
     makePageForEpisodes(results);
-    resultNumber.innerText = `${results.length} / ${allEpisodes.length}`;
+    resultNumber.innerText = `${results.length} / ${liveEpisodes.length}`;
     if (searchBox.value.length == 0) {
       resultNumber.innerText = "";
     }
   });
-
   selectEpisode.addEventListener("change", () => {
     if (selectEpisode.value === "novalue") {
-      makePageForEpisodes(allEpisodes);
+      makePageForEpisodes(liveEpisodes);
     } else {
-      let result = allEpisodes.filter((episode) => {
+      let result = liveEpisodes.filter((episode) => {
         return episode.id == selectEpisode.value;
       });
       makePageForEpisodes(result);
     }
   });
+}
+
+function getData(source) {
+  fetch(source)
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      liveEpisodes = data;
+    })
+    .then(() => console.log(liveEpisodes))
+    .then(() => makePageForEpisodes(liveEpisodes))
+    .then(() => listEpisodes(liveEpisodes))
+    .catch((error) => console.log(error));
 }
 
 function makePageForEpisodes(episodeList) {
@@ -44,7 +57,8 @@ function makeShadow(episode) {
   episodeShadow.append(
     makeTitle(episode),
     makeImage(episode),
-    makeBody(episode)
+    makeBody(episode),
+    makeEpisodeFooter(episode)
   );
   return episodeShadow;
 }
@@ -91,7 +105,31 @@ function makeCode(episode) {
     episode.number.toString().padStart(2, "0")
   );
 }
-
+function makeEpisodeFooter(episode) {
+  let episodeFooter = document.createElement("div");
+  episodeFooter.classList.add(
+    "d-flex",
+    "justify-content-between",
+    "align-items-center",
+    "episodefooter"
+  );
+  episodeFooter.append(makeLink(episode), makeTime(episode));
+  return episodeFooter;
+}
+function makeTime(episode) {
+  let episodeTime = document.createElement("small");
+  episodeTime.classList.add("text-muted");
+  episodeTime.innerText = `${episode.runtime} minutes`;
+  return episodeTime;
+}
+function makeLink(episode) {
+  let episodeLink = document.createElement("a");
+  episodeLink.classList.add("btn", "btn-sm", "btn-outline-secondary");
+  episodeLink.href = episode.url;
+  episodeLink.target = "_blank";
+  episodeLink.innerText = "View it on TVMaze";
+  return episodeLink;
+}
 function makeImage(episode) {
   let episodeImg = document.createElement("img");
   episodeImg.classList.add("bd-placeholder-img", "card-img-top");
