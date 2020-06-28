@@ -155,14 +155,24 @@ function makeLink(episode) {
 function makeImage(episode) {
   let episodeImg = document.createElement("img");
   episodeImg.classList.add("bd-placeholder-img", "card-img-top");
-  episodeImg.src = episode.image.medium;
+  if (episode.image) {
+    episodeImg.src = episode.image.medium;
+  } else {
+    episodeImg.src = "Imageplaceholder.png";
+  }
+
   return episodeImg;
 }
 
 function makeBody(episode) {
   let episodeBody = document.createElement("div");
   episodeBody.classList.add("card-body");
-  episodeBody.innerHTML = episode.summary;
+  if (episode.summary) {
+    episodeBody.innerHTML = episode.summary;
+  } else {
+    episodeBody.innerText = "Sorry, We can't find a summary for this episode!";
+  }
+
   return episodeBody;
 }
 
@@ -187,9 +197,11 @@ function listShows(shows) {
   });
 }
 function containsSearchTerm(episode) {
-  return (
-    episode.summary.toLowerCase().includes(searchBox.value.toLowerCase()) ||
-    episode.name.toLowerCase().includes(searchBox.value.toLowerCase())
-  );
+  if (episode.summary) {
+    return (
+      episode.summary.toLowerCase().includes(searchBox.value.toLowerCase()) ||
+      episode.name.toLowerCase().includes(searchBox.value.toLowerCase())
+    );
+  }
 }
 window.onload = setup;
