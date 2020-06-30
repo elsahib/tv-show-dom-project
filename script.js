@@ -73,9 +73,9 @@ function getData(source) {
     })
     .then((data) => {
       liveEpisodes = data;
+      makePageForEpisodes(liveEpisodes);
+      listEpisodes(liveEpisodes);
     })
-    .then(() => makePageForEpisodes(liveEpisodes))
-    .then(() => listEpisodes(liveEpisodes))
     .catch((error) => console.log(error));
 }
 function makePageForEpisodes(episodeList) {
