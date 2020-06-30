@@ -17,7 +17,7 @@ const selectShow = document.getElementById("allShows");
 function setup() {
   listShows(allShows);
   getData("https://api.tvmaze.com/shows/82/episodes");
-
+  // makePageForShows(allShows);
   searchBox.addEventListener("input", () => {
     let resultNumber = document.getElementById("resultNumber");
     let results = liveEpisodes.filter(containsSearchTerm);
@@ -70,6 +70,13 @@ function makePageForEpisodes(episodeList) {
   rootElem.innerHTML = "";
   episodeList.forEach((episode) => {
     rootElem.append(makeContainer(episode));
+  });
+}
+
+function makePageForShows(showsList) {
+  rootElem.innerHTML = "";
+  showsList.forEach((show) => {
+    rootElem.append(makeContainer(show));
   });
 }
 
@@ -160,7 +167,6 @@ function makeImage(episode) {
   } else {
     episodeImg.src = "Imageplaceholder.png";
   }
-
   return episodeImg;
 }
 
@@ -197,11 +203,13 @@ function listShows(shows) {
   });
 }
 function containsSearchTerm(episode) {
+  let inTitle, inSummary;
   if (episode.summary) {
-    return (
-      episode.summary.toLowerCase().includes(searchBox.value.toLowerCase()) ||
-      episode.name.toLowerCase().includes(searchBox.value.toLowerCase())
-    );
+    inSummary = episode.summary
+      .toLowerCase()
+      .includes(searchBox.value.toLowerCase());
   }
+  inTitle = episode.name.toLowerCase().includes(searchBox.value.toLowerCase());
+  return inTitle || inSummary;
 }
 window.onload = setup;
