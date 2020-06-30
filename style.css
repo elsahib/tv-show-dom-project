@@ -21,6 +21,7 @@
   text-align: center;
   text-justify: auto;
   font-weight: 700;
+  color: white;
 }
 #title {
   border: 1px solid #b4b7b8;
@@ -69,6 +70,24 @@ small {
   white-space: nowrap;
   overflow: hidden !important;
   text-overflow: ellipsis;
+}
+a {
+  cursor: pointer;
+}
+.special {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+  z-index: 99;
+  border: none;
+  outline: none;
+  background-color: gray;
+  color: white;
+  cursor: pointer;
+  padding: 0.8rem;
+  border-radius: 10px;
+  font-size: 16px;
 }
 @media (min-width: 576px) {
   .name {

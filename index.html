@@ -18,15 +18,17 @@
       <div class="navbar bg-dark">
         <div class="container d-flex">
           <select class="select" name="showsList" id="allShows">
-            <option value="novalue">The show WE like!</option>
+            <option value="novalue">List all shows</option>
           </select>
-
+          <button id="showListing" title="Show All Listings" class="special">
+            < Back
+          </button>
           <select class="select" name="episodesList" id="allEpisodes">
             <option value="novalue">List all episodes</option>
           </select>
           <div>
             <input
-              placeholder="Start typing to filter"
+              placeholder="Filter by Genre or word match"
               type="text"
               id="search"
             />
