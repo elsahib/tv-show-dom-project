@@ -74,21 +74,18 @@ small {
 a {
   cursor: pointer;
 }
-.special {
-  display: none;
-  position: fixed;
-  bottom: 20px;
-  right: 30px;
+/* .special {
+  position: unset;
   z-index: 99;
   border: none;
   outline: none;
-  background-color: gray;
-  color: white;
-  cursor: pointer;
-  padding: 0.8rem;
+  background-color: white;
+  color: gray;
+  padding: 0.2rem 2rem;
+  margin-right: 3rem;
   border-radius: 10px;
   font-size: 16px;
-}
+} */
 @media (min-width: 576px) {
   .name {
     text-align: left;

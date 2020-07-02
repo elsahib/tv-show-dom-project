@@ -20,9 +20,6 @@
           <select class="select" name="showsList" id="allShows">
             <option value="novalue">List all shows</option>
           </select>
-          <button id="showListing" title="Show All Listings" class="special">
-            < Back
-          </button>
           <select class="select" name="episodesList" id="allEpisodes">
             <option value="novalue">List all episodes</option>
           </select>
@@ -37,7 +34,19 @@
         </div>
       </div>
     </header>
-
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a id="home" href="#">Home</a>
+        </li>
+        <li
+          id="currentShow"
+          class="breadcrumb-item active"
+          aria-current="page"
+        ></li>
+        <!-- <div id="total" class="special ml-auto"></div> -->
+      </ol>
+    </nav>
     <main role="main">
       <div class="py-5 bg-light">
         <div class="container">
@@ -56,6 +65,7 @@
     <script src="episodes.js"></script>
     <script src="shows.js"></script>
     <!-- Loads YOUR javascript code -->
+
     <script src="script.js"></script>
   </body>
 </html>

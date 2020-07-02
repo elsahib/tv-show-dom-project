@@ -1,6 +1,7 @@
 // Global variables
+"use strict";
 const rootElem = document.getElementById("root");
-let searchBox = document.getElementById("search");
+const searchBox = document.getElementById("search");
 const allShows = getAllShows().sort(function (a, b) {
   if (a.name < b.name) {
     return -1;
@@ -13,58 +14,65 @@ const allShows = getAllShows().sort(function (a, b) {
 let liveEpisodes;
 const selectEpisode = document.getElementById("allEpisodes");
 const selectShow = document.getElementById("allShows");
-const specialBtn = document.getElementById("showListing");
+const homeBtn = document.getElementById("home");
+const currentShow = document.getElementById("currentShow");
 // first function gets executed as soon as the page is fully loaded.
 function setup() {
   listShows(allShows);
   makePageForEpisodes(allShows);
-  specialBtn.addEventListener("click", () => {
-    makePageForEpisodes(allShows);
-    specialBtn.style.display = "none";
-  });
-  searchBox.addEventListener("input", () => {
-    let resultNumber = document.getElementById("resultNumber");
-    let results;
-    if (selectShow.value === "novalue") {
-      results = allShows.filter(containsSearchTerm);
-    } else {
-      results = liveEpisodes.filter(containsSearchTerm);
-    }
-    makePageForEpisodes(results);
-    resultNumber.innerText = `found ${results.length} results`;
-    if (results.length > 0) {
-      resultNumber.className = "";
-      resultNumber.classList.add("badge", "badge-success");
-    } else {
-      resultNumber.className = "";
-      resultNumber.classList.add("badge", "badge-danger");
-    }
-    if (searchBox.value.length == 0) {
-      resultNumber.innerText = "";
-    }
-  });
-  selectEpisode.addEventListener("change", () => {
-    if (selectEpisode.value === "novalue") {
-      makePageForEpisodes(liveEpisodes);
-    } else {
-      let result = liveEpisodes.filter((episode) => {
-        return episode.id == selectEpisode.value;
-      });
-      makePageForEpisodes(result);
-    }
-  });
-  selectShow.addEventListener("change", () => {
-    let show = `https://api.tvmaze.com/shows/${selectShow.value}/episodes`;
+}
+homeBtn.addEventListener("click", () => {
+  selectShow.value = "novalue";
+  makePageForEpisodes(allShows);
+  currentShow.innerText = "";
+});
+selectEpisode.addEventListener("change", () => {
+  if (selectEpisode.value === "novalue") {
+    makePageForEpisodes(liveEpisodes);
+  } else {
+    let result = liveEpisodes.filter((episode) => {
+      return episode.id == selectEpisode.value;
+    });
+    makePageForEpisodes(result);
+  }
+});
+selectShow.addEventListener("change", () => {
+  let show = `https://api.tvmaze.com/shows/${selectShow.value}/episodes`;
 
-    if (selectShow.value === "novalue") {
-      while (selectEpisode.lastChild.value !== "novalue") {
-        selectEpisode.removeChild(selectEpisode.lastChild);
-      }
-      makePageForEpisodes(allShows);
-    } else {
-      getData(show);
+  if (selectShow.value === "novalue") {
+    while (selectEpisode.lastChild.value !== "novalue") {
+      selectEpisode.removeChild(selectEpisode.lastChild);
     }
-  });
+    makePageForEpisodes(allShows);
+    currentShow.innerText = "";
+  } else {
+    getData(show);
+    currentShow.innerText = selectShow["selectedOptions"][0].textContent;
+  }
+});
+searchBox.addEventListener("input", () => {
+  let results;
+  if (selectEpisode.childElementCount > 2) {
+    results = liveEpisodes.filter(containsSearchTerm);
+  } else {
+    results = allShows.filter(containsSearchTerm);
+  }
+  makePageForEpisodes(results);
+});
+function displayNumberOfEpisodes(filtered) {
+  let resultNumber = document.getElementById("resultNumber");
+  if (selectEpisode.childElementCount > 2) {
+    resultNumber.innerText = `${filtered.length} out of ${liveEpisodes.length} Episodes`;
+  } else {
+    resultNumber.innerText = `${filtered.length} out of ${allShows.length} Shows`;
+  }
+  if (filtered.length > 0) {
+    resultNumber.className = "";
+    resultNumber.classList.add("badge", "badge-success");
+  } else {
+    resultNumber.className = "";
+    resultNumber.classList.add("badge", "badge-danger");
+  }
 }
 function getData(source) {
   fetch(source)
@@ -80,6 +88,7 @@ function getData(source) {
 }
 function makePageForEpisodes(episodeList) {
   rootElem.innerHTML = "";
+  displayNumberOfEpisodes(episodeList);
   episodeList.forEach((episode) => {
     rootElem.append(makeContainer(episode));
   });
@@ -165,8 +174,9 @@ function makeName(episode) {
     showLink.style.color = "white";
     showLink.innerText = episode.name;
     showLink.addEventListener("click", () => {
-      specialBtn.style.display = "block";
       getData(show);
+      selectShow.value = episode.id;
+      currentShow.innerText = episode.name;
     });
     episodeName.append(showLink);
   } else {
@@ -243,7 +253,6 @@ function makeBody(episode) {
 }
 function listEpisodes(episodes) {
   while (selectEpisode.lastChild.value !== "novalue") {
-    // I don't know why it only works when it's > 2. it should work when it's > 1.
     selectEpisode.removeChild(selectEpisode.lastChild);
   }
   episodes.forEach((episode) => {
