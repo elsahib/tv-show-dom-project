@@ -108,7 +108,7 @@ function makeShadow(episode) {
 }
 function makeShowInfo(episode) {
   let infoContainer = document.createElement("section");
-  infoContainer.innerHTML = "<strong>Show Information:</strong>";
+  infoContainer.innerHTML = "<strong>About this show:</strong>";
   infoContainer.append(
     makeShowGenres(episode),
     makeShowStatus(episode),
