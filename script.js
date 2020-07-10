@@ -11,45 +11,52 @@ const allShows = getAllShows().sort(function (a, b) {
   }
   return 0;
 });
-let liveEpisodes;
+let liveEpisodes = [];
 const selectEpisode = document.getElementById("allEpisodes");
 const selectShow = document.getElementById("allShows");
 const homeBtn = document.getElementById("home");
 const currentShow = document.getElementById("currentShow");
+const myModal = document.getElementById("myModal"),
+  modalTitle = document.getElementById("modalTitle"),
+  modalContent = document.getElementById("modalContent"),
+  modalClose = document.getElementById("closeModal");
 // first function gets executed as soon as the page is fully loaded.
 function setup() {
   listShows(allShows);
-  makePageForEpisodes(allShows);
+  makePageForContent(allShows);
 }
+
 homeBtn.addEventListener("click", () => {
   selectShow.value = "novalue";
-  makePageForEpisodes(allShows);
+  clearEpisodesList();
+  makePageForContent(allShows);
   currentShow.innerText = "";
 });
+
 selectEpisode.addEventListener("change", () => {
   if (selectEpisode.value === "novalue") {
-    makePageForEpisodes(liveEpisodes);
+    makePageForContent(liveEpisodes);
   } else {
     let result = liveEpisodes.filter((episode) => {
       return episode.id == selectEpisode.value;
     });
-    makePageForEpisodes(result);
+    makePageForContent(result);
   }
 });
+
 selectShow.addEventListener("change", () => {
   let show = `https://api.tvmaze.com/shows/${selectShow.value}/episodes`;
 
   if (selectShow.value === "novalue") {
-    while (selectEpisode.lastChild.value !== "novalue") {
-      selectEpisode.removeChild(selectEpisode.lastChild);
-    }
-    makePageForEpisodes(allShows);
+    clearEpisodesList();
+    makePageForContent(allShows);
     currentShow.innerText = "";
   } else {
     getData(show);
     currentShow.innerText = selectShow["selectedOptions"][0].textContent;
   }
 });
+
 searchBox.addEventListener("input", () => {
   let results;
   if (selectEpisode.childElementCount > 2) {
@@ -57,11 +64,16 @@ searchBox.addEventListener("input", () => {
   } else {
     results = allShows.filter(containsSearchTerm);
   }
-  makePageForEpisodes(results);
+  makePageForContent(results);
 });
-function displayNumberOfEpisodes(filtered) {
+modalClose.addEventListener("click", () => {
+  myModal.style.display = "none";
+  modalContent.innerHTML = "";
+  document.body.classList.remove("modal-open");
+});
+function displayNumberOfResults(filtered) {
   let resultNumber = document.getElementById("resultNumber");
-  if (selectEpisode.childElementCount > 2) {
+  if (selectEpisode.childElementCount > 1) {
     resultNumber.innerText = `${filtered.length} out of ${liveEpisodes.length} Episodes`;
   } else {
     resultNumber.innerText = `${filtered.length} out of ${allShows.length} Shows`;
@@ -74,6 +86,7 @@ function displayNumberOfEpisodes(filtered) {
     resultNumber.classList.add("badge", "badge-danger");
   }
 }
+
 function getData(source) {
   fetch(source)
     .then((response) => {
@@ -81,18 +94,20 @@ function getData(source) {
     })
     .then((data) => {
       liveEpisodes = data;
-      makePageForEpisodes(liveEpisodes);
       listEpisodes(liveEpisodes);
+      makePageForContent(liveEpisodes);
     })
-    .catch((error) => console.log(error));
+    .catch((error) => console.error(error));
 }
-function makePageForEpisodes(episodeList) {
+
+function makePageForContent(episodeList) {
   rootElem.innerHTML = "";
-  displayNumberOfEpisodes(episodeList);
   episodeList.forEach((episode) => {
-    rootElem.append(makeContainer(episode));
+    rootElem.append(makeCardContainer(episode));
   });
+  displayNumberOfResults(episodeList);
 }
+
 function makeShadow(episode) {
   let episodeShadow = document.createElement("div");
   episodeShadow.classList.add("card", "mb-4", "shadow-sm");
@@ -101,11 +116,12 @@ function makeShadow(episode) {
     makeTitle(episode),
     makeImage(episode),
     makeBody(episode),
-    makeEpisodeFooter(episode)
+    makeCardFooter(episode)
   );
 
   return episodeShadow;
 }
+
 function makeShowInfo(episode) {
   let infoContainer = document.createElement("section");
   infoContainer.innerHTML = "<strong>About this show:</strong>";
@@ -116,6 +132,7 @@ function makeShowInfo(episode) {
   );
   return infoContainer;
 }
+
 function makeShowGenres(episode) {
   let genresInfo = document.createElement("div");
   genresInfo.innerHTML = "<strong>Genres:</strong> ";
@@ -131,22 +148,26 @@ function makeShowGenres(episode) {
   });
   return genresInfo;
 }
+
 function makeShowStatus(episode) {
   let showStatus = document.createElement("div");
   showStatus.innerHTML = `<strong>Status:</strong> ${episode.status}`;
   return showStatus;
 }
+
 function makeShowRating(episode) {
   let showRating = document.createElement("div");
   showRating.innerHTML = `<strong>Rated:</strong> ${episode.rating.average}`;
   return showRating;
 }
-function makeContainer(episode) {
+
+function makeCardContainer(episode) {
   let episodeContainer = document.createElement("div");
   episodeContainer.classList.add("col-md-4");
   episodeContainer.append(makeShadow(episode));
   return episodeContainer;
 }
+
 function makeTitle(episode) {
   let episodeTitle = document.createElement("div");
   episodeTitle.classList.add(
@@ -157,11 +178,41 @@ function makeTitle(episode) {
   episodeTitle.id = "title";
   if (makeNameCode(episode).innerText === "It's a TV Show") {
     episodeTitle.append(makeName(episode));
+    episodeTitle.addEventListener("click", () => {
+      let castInfoModal = document.createElement("div");
+      castInfoModal.classList.add("card");
+      fetch(`http://api.tvmaze.com/shows/${episode.id}?embed=cast`)
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          let actors = data._embedded.cast;
+          actors.forEach((actor) => {
+            let actorContainer = document.createElement("figure"),
+              actorImage = document.createElement("img"),
+              actorName = document.createElement("figcaption");
+            actorContainer.classList.add("figure");
+            actorImage.classList.add("figure-img", "img-fluid", "rounded");
+            actorName.classList.add("figure-caption", "font-weight-bold");
+            actorImage.alt = actor.person.name;
+            actorImage.src = actor.person.image.medium;
+            actorName.innerText = actor.person.name;
+            actorContainer.append(actorImage, actorName);
+            modalContent.append(actorContainer);
+            modalTitle.innerText = `${episode.name}'s Cast Crew`;
+            myModal.style.display = "block";
+            document.body.classList.add("modal-open");
+          });
+        })
+        .catch((error) => console.error(error));
+      rootElem.append(castInfoModal);
+    });
   } else {
     episodeTitle.append(makeName(episode), makeNameCode(episode));
   }
   return episodeTitle;
 }
+
 function makeName(episode) {
   let episodeName = document.createElement("div");
 
@@ -184,6 +235,7 @@ function makeName(episode) {
   }
   return episodeName;
 }
+
 function makeNameCode(episode) {
   let episodeNameCode = document.createElement("mediuem");
   episodeNameCode.classList.add("episodeNameCode");
@@ -191,6 +243,7 @@ function makeNameCode(episode) {
   episodeNameCode.innerText = makeCode(episode);
   return episodeNameCode;
 }
+
 function makeCode(episode) {
   let code = "It's a TV Show";
   if (episode.season) {
@@ -202,7 +255,8 @@ function makeCode(episode) {
   }
   return code;
 }
-function makeEpisodeFooter(episode) {
+
+function makeCardFooter(episode) {
   let episodeFooter = document.createElement("div");
   episodeFooter.classList.add(
     "d-flex",
@@ -213,12 +267,14 @@ function makeEpisodeFooter(episode) {
   episodeFooter.append(makeLink(episode), makeTime(episode));
   return episodeFooter;
 }
+
 function makeTime(episode) {
   let episodeTime = document.createElement("small");
   episodeTime.classList.add("text-muted");
   episodeTime.innerText = `Duration: ${episode.runtime} min`;
   return episodeTime;
 }
+
 function makeLink(episode) {
   let episodeLink = document.createElement("a");
   episodeLink.classList.add("btn", "btn-sm", "btn-outline-secondary");
@@ -227,6 +283,7 @@ function makeLink(episode) {
   episodeLink.innerText = "View it on TVMaze";
   return episodeLink;
 }
+
 function makeImage(episode) {
   let episodeImg = document.createElement("img");
   episodeImg.classList.add("bd-placeholder-img", "card-img-top");
@@ -237,6 +294,7 @@ function makeImage(episode) {
   }
   return episodeImg;
 }
+
 function makeBody(episode) {
   let episodeBody = document.createElement("div");
   episodeBody.classList.add("card-body");
@@ -251,10 +309,9 @@ function makeBody(episode) {
   }
   return episodeBody;
 }
+
 function listEpisodes(episodes) {
-  while (selectEpisode.lastChild.value !== "novalue") {
-    selectEpisode.removeChild(selectEpisode.lastChild);
-  }
+  clearEpisodesList();
   episodes.forEach((episode) => {
     let dropDownOption = document.createElement("option");
     dropDownOption.value = episode.id;
@@ -262,6 +319,14 @@ function listEpisodes(episodes) {
     selectEpisode.appendChild(dropDownOption);
   });
 }
+
+function clearEpisodesList() {
+  while (selectEpisode.lastChild.value !== "novalue") {
+    selectEpisode.removeChild(selectEpisode.lastChild);
+  }
+  searchBox.value = "";
+}
+
 function listShows(shows) {
   shows.forEach((show) => {
     let option = document.createElement("option");
@@ -270,6 +335,7 @@ function listShows(shows) {
     selectShow.append(option);
   });
 }
+
 function containsSearchTerm(episode) {
   let inTitle, inSummary, inGenres;
   if (episode.summary) {
@@ -287,4 +353,5 @@ function containsSearchTerm(episode) {
   }
   return inTitle || inSummary || inGenres;
 }
+
 window.onload = setup;

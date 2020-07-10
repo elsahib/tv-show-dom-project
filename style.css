@@ -74,18 +74,18 @@ small {
 a {
   cursor: pointer;
 }
-/* .special {
-  position: unset;
-  z-index: 99;
-  border: none;
-  outline: none;
-  background-color: white;
-  color: gray;
-  padding: 0.2rem 2rem;
-  margin-right: 3rem;
-  border-radius: 10px;
-  font-size: 16px;
-} */
+.modal-open {
+  height: 100vh;
+  overflow-y: hidden;
+  padding-right: 15px;
+}
+.figure {
+  padding: 0.5rem;
+}
+.modal {
+  background-color: rgba(0, 0, 0, 0.7);
+  text-align: center;
+}
 @media (min-width: 576px) {
   .name {
     text-align: left;
