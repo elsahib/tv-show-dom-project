@@ -30,6 +30,7 @@ homeBtn.addEventListener("click", () => {
   selectShow.value = "novalue";
   clearEpisodesList();
   makePageForContent(allShows);
+  homeBtn.removeAttribute("href");
   currentShow.innerText = "";
 });
 
@@ -50,9 +51,11 @@ selectShow.addEventListener("change", () => {
   if (selectShow.value === "novalue") {
     clearEpisodesList();
     makePageForContent(allShows);
+    homeBtn.removeAttribute("href");
     currentShow.innerText = "";
   } else {
     getData(show);
+    homeBtn.href = "#";
     currentShow.innerText = selectShow["selectedOptions"][0].textContent;
   }
 });
@@ -66,11 +69,13 @@ searchBox.addEventListener("input", () => {
   }
   makePageForContent(results);
 });
+
 modalClose.addEventListener("click", () => {
   myModal.style.display = "none";
   modalContent.innerHTML = "";
   document.body.classList.remove("modal-open");
 });
+
 function displayNumberOfResults(filtered) {
   let resultNumber = document.getElementById("resultNumber");
   if (selectEpisode.childElementCount > 1) {
@@ -108,14 +113,14 @@ function makePageForContent(episodeList) {
   displayNumberOfResults(episodeList);
 }
 
-function makeShadow(episode) {
+function makeCardShadow(episode) {
   let episodeShadow = document.createElement("div");
   episodeShadow.classList.add("card", "mb-4", "shadow-sm");
 
   episodeShadow.append(
-    makeTitle(episode),
-    makeImage(episode),
-    makeBody(episode),
+    makeCardTitle(episode),
+    makeCardImage(episode),
+    makeCardBody(episode),
     makeCardFooter(episode)
   );
 
@@ -136,16 +141,8 @@ function makeShowInfo(episode) {
 function makeShowGenres(episode) {
   let genresInfo = document.createElement("div");
   genresInfo.innerHTML = "<strong>Genres:</strong> ";
-  episode.genres.forEach((type) => {
-    let genre = document.createElement("span");
-    if (episode.genres.length > 1) {
-      genre.innerText = type + " | ";
-    } else {
-      genre.innerText = type;
-    }
-
-    genresInfo.append(genre);
-  });
+  let genre = episode.genres.join(" | ");
+  genresInfo.append(genre);
   return genresInfo;
 }
 
@@ -164,11 +161,11 @@ function makeShowRating(episode) {
 function makeCardContainer(episode) {
   let episodeContainer = document.createElement("div");
   episodeContainer.classList.add("col-md-4");
-  episodeContainer.append(makeShadow(episode));
+  episodeContainer.append(makeCardShadow(episode));
   return episodeContainer;
 }
 
-function makeTitle(episode) {
+function makeCardTitle(episode) {
   let episodeTitle = document.createElement("div");
   episodeTitle.classList.add(
     "d-flex",
@@ -177,7 +174,7 @@ function makeTitle(episode) {
   );
   episodeTitle.id = "title";
   if (makeNameCode(episode).innerText === "It's a TV Show") {
-    episodeTitle.append(makeName(episode));
+    episodeTitle.append(makeCardName(episode));
     episodeTitle.addEventListener("click", () => {
       let castInfoModal = document.createElement("div");
       castInfoModal.classList.add("card");
@@ -208,12 +205,12 @@ function makeTitle(episode) {
       rootElem.append(castInfoModal);
     });
   } else {
-    episodeTitle.append(makeName(episode), makeNameCode(episode));
+    episodeTitle.append(makeCardName(episode), makeNameCode(episode));
   }
   return episodeTitle;
 }
 
-function makeName(episode) {
+function makeCardName(episode) {
   let episodeName = document.createElement("div");
 
   episodeName.classList.add("btn-group", "name");
@@ -227,6 +224,7 @@ function makeName(episode) {
     showLink.addEventListener("click", () => {
       getData(show);
       selectShow.value = episode.id;
+      homeBtn.href = "#";
       currentShow.innerText = episode.name;
     });
     episodeName.append(showLink);
@@ -264,18 +262,18 @@ function makeCardFooter(episode) {
     "align-items-center",
     "episodefooter"
   );
-  episodeFooter.append(makeLink(episode), makeTime(episode));
+  episodeFooter.append(makeTVMazeLink(episode), makeTimeDisplay(episode));
   return episodeFooter;
 }
 
-function makeTime(episode) {
+function makeTimeDisplay(episode) {
   let episodeTime = document.createElement("small");
   episodeTime.classList.add("text-muted");
   episodeTime.innerText = `Duration: ${episode.runtime} min`;
   return episodeTime;
 }
 
-function makeLink(episode) {
+function makeTVMazeLink(episode) {
   let episodeLink = document.createElement("a");
   episodeLink.classList.add("btn", "btn-sm", "btn-outline-secondary");
   episodeLink.href = episode.url;
@@ -284,7 +282,7 @@ function makeLink(episode) {
   return episodeLink;
 }
 
-function makeImage(episode) {
+function makeCardImage(episode) {
   let episodeImg = document.createElement("img");
   episodeImg.classList.add("bd-placeholder-img", "card-img-top");
   if (episode.image) {
@@ -295,7 +293,7 @@ function makeImage(episode) {
   return episodeImg;
 }
 
-function makeBody(episode) {
+function makeCardBody(episode) {
   let episodeBody = document.createElement("div");
   episodeBody.classList.add("card-body");
   if (episode.genres) {
