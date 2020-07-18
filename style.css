@@ -33,6 +33,9 @@
 #resultNumber {
   color: white;
 }
+.castLink {
+  padding-left: 0.4rem;
+}
 
 .episodeNameCode {
   color: white;

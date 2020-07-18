@@ -110,9 +110,12 @@ function makePageForContent(episodeList) {
   episodeList.forEach((episode) => {
     rootElem.append(makeCardContainer(episode));
   });
-  displayNumberOfResults(episodeList);
-}
 
+  displayNumberOfResults(episodeList);
+  document.querySelectorAll(".castLink").forEach((item) => {
+    item.addEventListener("click", attacheEventToCastLink);
+  });
+}
 function makeCardShadow(episode) {
   let episodeShadow = document.createElement("div");
   episodeShadow.classList.add("card", "mb-4", "shadow-sm");
@@ -131,6 +134,7 @@ function makeShowInfo(episode) {
   let infoContainer = document.createElement("section");
   infoContainer.innerHTML = "<strong>About this show:</strong>";
   infoContainer.append(
+    makeShowCastLink(episode),
     makeShowGenres(episode),
     makeShowStatus(episode),
     makeShowRating(episode)
@@ -138,6 +142,21 @@ function makeShowInfo(episode) {
   return infoContainer;
 }
 
+function makeShowCastLink(episode) {
+  let castInfo = document.createElement("div"),
+    castLink = document.createElement("span");
+  castInfo.innerHTML = "<strong>Casting Crew:</strong> ";
+  castLink.innerText = "View Crew List";
+  castLink.classList.add("btn-link", "castLink");
+  castInfo.append(castLink);
+  castLink.id = episode.id;
+
+  return castInfo;
+}
+
+function attacheEventToCastLink(e) {
+  getCastDataToModal(e.target.id);
+}
 function makeShowGenres(episode) {
   let genresInfo = document.createElement("div");
   genresInfo.innerHTML = "<strong>Genres:</strong> ";
@@ -175,39 +194,49 @@ function makeCardTitle(episode) {
   episodeTitle.id = "title";
   if (makeNameCode(episode).innerText === "It's a TV Show") {
     episodeTitle.append(makeCardName(episode));
-    episodeTitle.addEventListener("click", () => {
-      let castInfoModal = document.createElement("div");
-      castInfoModal.classList.add("card");
-      fetch(`http://api.tvmaze.com/shows/${episode.id}?embed=cast`)
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          let actors = data._embedded.cast;
-          actors.forEach((actor) => {
-            let actorContainer = document.createElement("figure"),
-              actorImage = document.createElement("img"),
-              actorName = document.createElement("figcaption");
-            actorContainer.classList.add("figure");
-            actorImage.classList.add("figure-img", "img-fluid", "rounded");
-            actorName.classList.add("figure-caption", "font-weight-bold");
-            actorImage.alt = actor.person.name;
-            actorImage.src = actor.person.image.medium;
-            actorName.innerText = actor.person.name;
-            actorContainer.append(actorImage, actorName);
-            modalContent.append(actorContainer);
-            modalTitle.innerText = `${episode.name}'s Cast Crew`;
-            myModal.style.display = "block";
-            document.body.classList.add("modal-open");
-          });
-        })
-        .catch((error) => console.error(error));
-      rootElem.append(castInfoModal);
-    });
   } else {
     episodeTitle.append(makeCardName(episode), makeNameCode(episode));
   }
   return episodeTitle;
+}
+
+function getCastDataToModal(episodeId) {
+  fetch(`http://api.tvmaze.com/shows/${episodeId}?embed=cast`)
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      let actors = data._embedded.cast;
+      actors.forEach((actor) => {
+        modalContent.append(makeActorFigure(actor));
+        modalTitle.innerText = `${data.name}'s Cast Crew`;
+        myModal.style.display = "block";
+        document.body.classList.add("modal-open");
+      });
+    })
+    .catch((error) => console.error(error));
+}
+
+function makeActorCaption(actor) {
+  let actorName = document.createElement("figcaption");
+  actorName.classList.add("figure-caption", "font-weight-bold");
+  actorName.innerText = actor.person.name;
+  return actorName;
+}
+
+function makeActorImage(actor) {
+  let actorImage = document.createElement("img");
+  actorImage.classList.add("figure-img", "img-fluid", "rounded");
+  actorImage.alt = actor.person.name;
+  actorImage.src = actor.person.image.medium;
+  return actorImage;
+}
+
+function makeActorFigure(actor) {
+  let actorContainer = document.createElement("figure");
+  actorContainer.classList.add("figure");
+  actorContainer.append(makeActorImage(actor), makeActorCaption(actor));
+  return actorContainer;
 }
 
 function makeCardName(episode) {
