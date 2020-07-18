@@ -201,7 +201,7 @@ function makeCardTitle(episode) {
 }
 
 function getCastDataToModal(episodeId) {
-  fetch(`http://api.tvmaze.com/shows/${episodeId}?embed=cast`)
+  fetch(`https://api.tvmaze.com/shows/${episodeId}?embed=cast`)
     .then((response) => {
       return response.json();
     })
